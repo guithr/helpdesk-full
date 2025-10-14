@@ -1,0 +1,114 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  TECHNICIAN
+  CUSTOMER
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  CLOSED
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role
+  avatarUrl String?  @map("avatar_url")
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  technician Technician?
+  customer   Customer?
+
+  @@index([email])
+  @@index([role])
+  @@map("users")
+}
+
+model Technician {
+  id                String   @id @default(uuid())
+  userId            String   @unique @map("user_id")
+  temporaryPassword Boolean  @default(true) @map("temporary_password")
+  availableHours    String[] @default(["08:00", "09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00"]) @map("available_hours")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tickets Ticket[]
+
+  @@map("technicians")
+}
+
+model Customer {
+  id        String   @id @default(uuid())
+  userId    String   @unique @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tickets Ticket[]
+
+  @@map("customers")
+}
+
+model Service {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  price       Float
+  isActive    Boolean   @default(true) @map("is_active")
+  deletedAt   DateTime? @map("deleted_at") // Soft delete
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  ticketServices TicketService[]
+
+  @@map("services")
+}
+
+model Ticket {
+  id           String       @id @default(uuid())
+  customerId   String       @map("customer_id")
+  technicianId String       @map("technician_id")
+  status       TicketStatus @default(OPEN)
+  description  String?
+  notes        String?      @db.Text
+  totalPrice   Decimal?     @map("total_price") @db.Decimal(10, 2)
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+
+  customer       Customer        @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  technician     Technician      @relation(fields: [technicianId], references: [id], onDelete: Restrict)
+  ticketServices TicketService[]
+
+  @@index([status])
+  @@index([createdAt])
+  @@map("tickets")
+}
+
+model TicketService {
+  id        String   @id @default(uuid())
+  ticketId  String   @map("ticket_id")
+  serviceId String   @map("service_id")
+  addedBy   Role     @map("added_by") // Quem adicionou: cliente ou técnico
+  price     Decimal  @db.Decimal(10, 2)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  ticket  Ticket  @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+
+  @@map("ticket_services")
+}
