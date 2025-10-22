@@ -19,7 +19,7 @@ authRoutes.get("/me", ensureAuthenticated, (req, res) => {
 authRoutes.post(
   "/create-technician",
   ensureAuthenticated,
-  ensureAuthorized("admin"),
+  ensureAuthorized("ADMIN"),
   (req, res) => {
     res.json({ message: "Técnico criado com sucesso" });
   }
