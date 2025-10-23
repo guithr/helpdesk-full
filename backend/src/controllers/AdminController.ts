@@ -5,6 +5,7 @@ import { z } from "zod";
 import { hash } from "bcrypt";
 
 export class AdminController {
+  // Admin
   async createAdmin(request: Request, response: Response) {
     const schema = z.object({
       name: z.string().trim().min(2, { message: "Nome é obrigatório" }),
@@ -148,6 +149,138 @@ export class AdminController {
 
     return response.status(200).json({
       message: "Administrador desativado com sucesso",
+    });
+  }
+
+  // Technician
+  async createTechnicians(request: Request, response: Response) {
+    const schema = z.object({
+      name: z.string().trim().min(2, { message: "Nome é obrigatório" }),
+      email: z.email({ message: "E-mail inválido" }).trim().toLowerCase(),
+      password: z
+        .string()
+        .min(8, { message: "A senha deve ter pelo menos 8 dígitos" }),
+      availableHours: z.array(z.string()).optional(),
+    });
+    const { name, email, password, availableHours } = schema.parse(
+      request.body
+    );
+
+    const userExists = await prisma.user.findUnique({ where: { email } });
+
+    if (userExists) {
+      throw new AppError("E-mail já cadastrado", 409);
+    }
+
+    const hashedPassword = await hash(password, 8);
+
+    const user = await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        role: "TECHNICIAN",
+        technician: {
+          create: {
+            availableHours: availableHours || [
+              "08:00",
+              "09:00",
+              "10:00",
+              "11:00",
+              "14:00",
+              "15:00",
+              "16:00",
+              "17:00",
+            ],
+          },
+        },
+      },
+      include: { technician: true },
+    });
+
+    return response.status(200).json({
+      message: "Técnico criado com sucesso",
+    });
+  }
+
+  async listTechnicians(request: Request, response: Response) {
+    const technician = await prisma.user.findMany({
+      where: {
+        role: "TECHNICIAN",
+        isActive: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        isActive: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    return response.status(200).json({ total: technician.length, technician });
+  }
+
+  async updateTechnicians(request: Request, response: Response) {
+    const schema = z.object({
+      name: z.string().trim().optional(),
+      email: z.email().trim().toLowerCase().optional(),
+      availableHours: z
+        .array(z.string())
+        .min(1, { message: "Horários obrigatórios" })
+        .optional(),
+    });
+
+    const { name, email, availableHours } = schema.parse(request.body);
+    const { id } = request.params;
+
+    const technician = await prisma.technician.findUnique({
+      where: { id },
+      include: { user: true },
+    });
+
+    if (!technician) {
+      throw new AppError("Técnico não encontrado", 404);
+    }
+
+    if (technician.user.role !== "TECHNICIAN") {
+      throw new AppError("Usuário não é um técnico válido", 403);
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: technician.userId },
+      data: {
+        name: name ?? technician.user.name,
+        email: email ?? technician.user.email,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        isActive: true,
+        updatedAt: true,
+      },
+    });
+
+    const updatedTechnician = await prisma.technician.update({
+      where: { id },
+      data: {
+        availableHours: availableHours ?? technician.availableHours,
+      },
+      include: { user: true },
+    });
+
+    return response.status(200).json({
+      message: "Técnico atualizado com sucesso",
+      technician: {
+        id: updatedTechnician.id,
+        availableHours: updatedTechnician.availableHours,
+        user: updatedUser,
+      },
     });
   }
 }

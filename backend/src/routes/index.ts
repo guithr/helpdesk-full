@@ -2,13 +2,12 @@ import { Router } from "express";
 
 import { authRoutes } from "./auth-routes";
 import { adminRoutes } from "./admin-routes";
+import { technicianRoutes } from "./technician-routes";
 
 const routes = Router();
 
-//Public Routes
 routes.use("/auth", authRoutes);
-
-// Private Routes
 routes.use("/admin", adminRoutes);
+routes.use("/technician", technicianRoutes);
 
 export { routes };
