@@ -32,18 +32,13 @@ export class AdminController {
         password: hashedPassword,
         role: "ADMIN",
       },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        createdAt: true,
-      },
     });
+
+    const { password: _, ...userWithoutPassword } = admin;
 
     response.status(201).json({
       message: "Administrador criado com sucesso",
-      admin,
+      admin: userWithoutPassword,
     });
   }
   async listAdmin(request: Request, response: Response) {
@@ -60,7 +55,6 @@ export class AdminController {
         name: true,
         email: true,
         isActive: true,
-        createdAt: true,
         updatedAt: true,
       },
     });
@@ -239,7 +233,7 @@ export class AdminController {
     const { id } = request.params;
 
     const technician = await prisma.technician.findUnique({
-      where: { id },
+      where: { userId: id },
       include: { user: true },
     });
 
@@ -267,7 +261,7 @@ export class AdminController {
     });
 
     const updatedTechnician = await prisma.technician.update({
-      where: { id },
+      where: { userId: id },
       data: {
         availableHours: availableHours ?? technician.availableHours,
       },
@@ -279,6 +273,75 @@ export class AdminController {
       technician: {
         id: updatedTechnician.id,
         availableHours: updatedTechnician.availableHours,
+        user: updatedUser,
+      },
+    });
+  }
+
+  //Customer
+  async listCustomer(request: Request, response: Response) {
+    const user = await prisma.user.findMany({
+      where: {
+        role: "CUSTOMER",
+        isActive: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        isActive: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    return response.status(200).json({ total: user.length, user });
+  }
+
+  async updateCustomer(request: Request, response: Response) {
+    const schema = z.object({
+      name: z.string().trim().optional(),
+      email: z.email().trim().toLowerCase().optional(),
+    });
+
+    const { name, email } = schema.parse(request.body);
+    const { id } = request.params;
+
+    const customer = await prisma.customer.findUnique({
+      where: { userId: id },
+      include: { user: true },
+    });
+
+    if (!customer) {
+      throw new AppError("Cliente não encontrado", 404);
+    }
+
+    if (customer.user.role !== "CUSTOMER") {
+      throw new AppError("Usuário não é um cliente", 403);
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: customer.userId },
+      data: {
+        name: name ?? customer.user.name,
+        email: email ?? customer.user.email,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        isActive: true,
+        updatedAt: true,
+      },
+    });
+
+    return response.status(200).json({
+      message: "Cliente atualizado com sucesso",
+      customer: {
+        id: customer.id,
         user: updatedUser,
       },
     });

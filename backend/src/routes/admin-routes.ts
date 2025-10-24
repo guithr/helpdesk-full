@@ -19,4 +19,8 @@ adminRoutes.post("/technicians", adminController.createTechnicians);
 adminRoutes.get("/technicians", adminController.listTechnicians);
 adminRoutes.patch("/technicians/:id", adminController.updateTechnicians);
 
+// Customer
+adminRoutes.get("/customer", adminController.listCustomer);
+adminRoutes.patch("/customer/:id", adminController.updateCustomer);
+
 export { adminRoutes };

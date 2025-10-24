@@ -14,7 +14,7 @@ technicianRoutes.get("/profile", technicianController.getProfile);
 //  Atualizar nome/email do técnico
 technicianRoutes.patch("/profile", technicianController.updateProfileSchema);
 
-//  Atualizar nome/email do técnico
+//  Atualizar senha do técnico
 technicianRoutes.patch(
   "/profile/password",
   technicianController.changePassword
