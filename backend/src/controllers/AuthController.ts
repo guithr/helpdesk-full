@@ -13,7 +13,7 @@ class AuthController {
       email: z.email({ message: "E-mail inválido" }).trim().toLowerCase(),
       password: z
         .string()
-        .min(8, { message: "A senha deve ter pelo menos 8 dígitos" }),
+        .min(6, { message: "A senha deve ter pelo menos 6 dígitos" }),
     });
 
     const { name, email, password } = schema.parse(request.body);

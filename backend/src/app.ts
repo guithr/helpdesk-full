@@ -6,7 +6,12 @@ import { routes } from "./routes";
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173", // ✅ frontend (Vite)
+    credentials: true, // ✅ permite cookies / headers com credenciais
+  })
+);
 
 app.use(routes);
 
