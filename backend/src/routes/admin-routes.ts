@@ -23,4 +23,11 @@ adminRoutes.patch("/technicians/:id", adminController.updateTechnicians);
 adminRoutes.get("/customer", adminController.listCustomer);
 adminRoutes.patch("/customer/:id", adminController.updateCustomer);
 
+// Service
+adminRoutes.post("/service", adminController.createService);
+adminRoutes.get("/service", adminController.listServices);
+adminRoutes.patch("/service/:id", adminController.updateService);
+adminRoutes.delete("/service/:id", adminController.deleteService);
+adminRoutes.patch("/service/:id/activate", adminController.activeService);
+
 export { adminRoutes };

@@ -346,4 +346,183 @@ export class AdminController {
       },
     });
   }
+
+  //Service
+  async createService(request: Request, response: Response) {
+    const schema = z.object({
+      name: z.string().trim().min(3, "O nome deve ter no mínimo 3 caracteres"),
+      price: z
+        .number("O preço deve ser um número")
+        .positive("O preço deve ser maior que zero"),
+    });
+
+    const { name, price } = schema.parse(request.body);
+
+    const existingService = await prisma.service.findFirst({
+      where: {
+        name: {
+          equals: name,
+          mode: "insensitive",
+        },
+        deletedAt: null,
+      },
+    });
+
+    if (existingService) {
+      throw new AppError("Já existe um serviço com este nome", 409);
+    }
+
+    const service = await prisma.service.create({
+      data: {
+        name,
+        price,
+      },
+    });
+    return response.status(201).json(service);
+  }
+
+  async listServices(request: Request, response: Response) {
+    const services = await prisma.service.findMany({
+      where: {
+        deletedAt: null,
+      },
+      orderBy: {
+        name: "asc",
+      },
+    });
+    return response.status(200).json(services);
+  }
+
+  async updateService(request: Request, response: Response) {
+    const paramSchema = z.object({
+      id: z.uuid("ID inválido"),
+    });
+
+    const bodySchema = z.object({
+      name: z
+        .string()
+        .trim()
+        .min(3, "O nome deve ter no mínimo 3 caracteres")
+        .optional(),
+      price: z
+        .number("O preço deve ser um número")
+        .positive("O preço deve ser maior que zero")
+        .optional(),
+    });
+
+    const { name, price } = bodySchema.parse(request.body);
+    const { id } = paramSchema.parse(request.params);
+
+    const existingService = await prisma.service.findFirst({
+      where: {
+        id,
+        deletedAt: null,
+      },
+    });
+
+    if (!existingService) {
+      throw new AppError("Serviço não encontrado", 404);
+    }
+
+    if (name && name !== existingService.name) {
+      const duplicateService = await prisma.service.findFirst({
+        where: {
+          name: {
+            equals: name,
+            mode: "insensitive",
+          },
+          deletedAt: null,
+          id: {
+            not: id,
+          },
+        },
+      });
+
+      if (duplicateService) {
+        throw new AppError("Já existe um serviço com este nome", 409);
+      }
+    }
+
+    const service = await prisma.service.update({
+      where: {
+        id,
+      },
+      data: {
+        name,
+        price,
+      },
+    });
+
+    return response.status(200).json(service);
+  }
+
+  async deleteService(request: Request, response: Response) {
+    const paramSchema = z.object({
+      id: z.uuid("ID inválido"),
+    });
+    const { id } = paramSchema.parse(request.params);
+
+    const existingService = await prisma.service.findFirst({
+      where: {
+        id,
+        deletedAt: null,
+      },
+    });
+
+    if (!existingService) {
+      throw new AppError("Serviço não encontrado", 404);
+    }
+
+    const service = await prisma.service.update({
+      where: {
+        id,
+      },
+      data: {
+        isActive: false,
+        deletedAt: new Date(),
+      },
+    });
+
+    return response.json({
+      message: "Serviço desativado com sucesso",
+      service,
+    });
+  }
+
+  async activeService(request: Request, response: Response) {
+    const paramSchema = z.object({
+      id: z.uuid("ID inválido"),
+    });
+
+    const { id } = paramSchema.parse(request.params);
+
+    const existingService = await prisma.service.findFirst({
+      where: {
+        id,
+      },
+    });
+
+    if (!existingService) {
+      throw new AppError("Serviço não encontrado", 404);
+    }
+
+    if (existingService.isActive && !existingService.deletedAt) {
+      throw new AppError("Serviço já está ativo", 400);
+    }
+
+    const service = await prisma.service.update({
+      where: {
+        id,
+      },
+      data: {
+        isActive: true,
+        deletedAt: null,
+      },
+    });
+
+    return response.json({
+      message: "Serviço reativado com sucesso",
+      service,
+    });
+  }
 }

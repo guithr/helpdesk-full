@@ -84,6 +84,7 @@ model Ticket {
   customerId   String       @map("customer_id")
   technicianId String       @map("technician_id")
   status       TicketStatus @default(OPEN)
+  title        String
   description  String?
   notes        String?      @db.Text
   totalPrice   Decimal?     @map("total_price") @db.Decimal(10, 2)
