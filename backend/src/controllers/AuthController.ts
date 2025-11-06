@@ -89,6 +89,22 @@ class AuthController {
 
     response.json({ token, user: userWithoutPassword });
   }
+
+  async me(request: Request, response: Response) {
+    const userId = request.user.id; // vem do middleware de autenticação JWT
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      return response.status(404).json({ message: "Usuário não encontrado" });
+    }
+
+    const { password: _, ...userWithoutPassword } = user;
+
+    return response.json(userWithoutPassword);
+  }
 }
 
 export { AuthController };
