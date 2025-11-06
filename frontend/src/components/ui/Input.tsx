@@ -1,8 +1,8 @@
 import type React from "react";
 import { tv } from "tailwind-variants";
 import Text from "./Text";
-import Icon from "./Icon";
-import CircleAlert from "../assets/icons/circle-alert.svg?react";
+import Icon from "../icon/Icon";
+import CircleAlert from "../../assets/icons/circle-alert.svg?react";
 
 const inputContainer = tv({
   base: "flex flex-col w-full gap-2 group",

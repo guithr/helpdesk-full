@@ -1,15 +1,19 @@
+// src/pages/SignIn/index.tsx
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-
-import { signInSchema, type SignInFormData } from "../validations/authSchema";
-import Button from "../components/Button";
-import Input from "../components/Input";
-import Text from "../components/Text";
+import {
+  signInSchema,
+  type SignInFormData,
+} from "../../validations/authSchema";
+import Button from "../../components/ui/Button";
+import Input from "../../components/ui/Input";
+import Text from "../../components/ui/Text";
+import { useAuth } from "../../hooks/useAuth";
 
 export function SignIn() {
   const navigate = useNavigate();
+  const { signIn } = useAuth();
 
   const {
     register,
@@ -22,25 +26,24 @@ export function SignIn() {
 
   async function onSubmit(data: SignInFormData) {
     try {
-      const res = await axios.post("http://localhost:3333/auth/login", data, {
-        withCredentials: true,
-      });
-
-      console.log("Login bem-sucedido:", res.data);
-      navigate("/dashboard");
+      await signIn(data.email, data.password);
+      // O navigate já está sendo chamado dentro do signIn (AuthContext)
     } catch (err: any) {
-      // Erros vindos do backend
-      const { message, fieldErrors } = err.response?.data || {};
+      const backend = err.response?.data;
 
-      if (fieldErrors) {
-        Object.entries(fieldErrors).forEach(([key, value]) => {
-          setError(key as keyof SignInFormData, {
-            message: value as string,
+      if (backend?.fieldErrors) {
+        // Aplica erros específicos por campo
+        Object.entries(backend.fieldErrors).forEach(([field, message]) => {
+          setError(field as keyof SignInFormData, {
+            message: message as string,
           });
         });
       } else {
+        // Erro geral (credenciais inválidas, servidor fora, etc)
         setError("root", {
-          message: message || "Erro ao fazer login. Verifique seus dados.",
+          type: "manual",
+          message:
+            backend?.message || "Erro ao fazer login. Verifique seus dados.",
         });
       }
     }
@@ -78,12 +81,17 @@ export function SignIn() {
               helperText={errors.password?.message}
             />
 
+            {/* Mensagem de erro geral */}
             {errors.root && (
-              <Text variant="text-xs-regular" className="text-feedback-danger">
+              <Text
+                variant="text-xs-regular"
+                className="text-feedback-danger -mt-2"
+              >
                 {errors.root.message}
               </Text>
             )}
           </div>
+
           <Button type="submit" variant="primary" disabled={isSubmitting}>
             {isSubmitting ? "Entrando..." : "Entrar"}
           </Button>
@@ -95,7 +103,7 @@ export function SignIn() {
           Ainda não tem uma conta?
         </Text>
         <Text variant="text-xs-regular" className="text-gray-300 mb-5 md:mb-6">
-          Cadastre agora mesmo
+          Cadastre-se agora mesmo
         </Text>
         <Button variant="secondary" onClick={() => navigate("/signup")}>
           Criar conta

@@ -1,6 +1,6 @@
 import type React from "react";
 import { tv, type VariantProps } from "tailwind-variants";
-import Icon from "./Icon";
+import Icon from "../icon/Icon";
 import Text from "./Text";
 
 export const buttonVariants = tv({

@@ -1,7 +1,7 @@
 import { Outlet } from "react-router";
-import bgLogin from "../assets/images/bg-login.png";
-import logoDark from "../assets/logos/Logo_IconDark.svg";
-import Text from "../components/Text";
+import bgLogin from "../../assets/images/bg-login.png";
+import logoDark from "../../assets/logos/Logo_IconDark.svg";
+import Text from "../ui/Text";
 
 export function AuthLayout() {
   return (

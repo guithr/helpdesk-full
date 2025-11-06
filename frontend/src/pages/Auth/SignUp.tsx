@@ -1,13 +1,16 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../../services/api"; // ← Use a instância configurada do axios
 
-import { signUpSchema, type SignUpFormData } from "../validations/authSchema";
+import {
+  signUpSchema,
+  type SignUpFormData,
+} from "../../validations/authSchema";
 
-import Button from "../components/Button";
-import Input from "../components/Input";
-import Text from "../components/Text";
+import Button from "../../components/ui/Button";
+import Input from "../../components/ui/Input";
+import Text from "../../components/ui/Text";
 
 export function SignUp() {
   const navigate = useNavigate();
@@ -23,31 +26,31 @@ export function SignUp() {
 
   async function onSubmit(data: SignUpFormData) {
     try {
-      const res = await axios.post(
-        "http://localhost:3333/auth/register",
-        data,
-        {
-          withCredentials: true,
-        }
-      );
-      navigate("/signin", { replace: true });
+      const res = await api.post("/auth/register", data);
       console.log("Conta cadastrada:", res.data);
+      navigate("/signin", { replace: true });
     } catch (err: any) {
-      // padrão: backend retorna { message, fieldErrors }
       const backend = err.response?.data;
+
       if (backend?.fieldErrors) {
-        // aplica erros por campo
+        // Aplica erros específicos por campo
         Object.entries(backend.fieldErrors).forEach(([field, message]) => {
           setError(field as keyof SignUpFormData, {
             message: message as string,
           });
         });
-      } else {
-        // erro geral (mostre num toast ou num campo root)
-        setError("name", {
-          message: backend?.message || "Erro ao criar conta",
+      } else if (backend?.message) {
+        // Erro geral: exibe no primeiro campo ou cria um campo "root"
+        setError("root", {
+          type: "manual",
+          message: backend.message,
         });
-        // note: RHF não tem 'root' por padrão; você pode usar setError on any field or store general message in state
+      } else {
+        // Erro desconhecido
+        setError("root", {
+          type: "manual",
+          message: "Erro ao criar conta. Tente novamente.",
+        });
       }
     }
   }
@@ -88,16 +91,21 @@ export function SignUp() {
               type="password"
               placeholder="Digite sua senha"
               helperText={errors.password?.message || "Mínimo de 6 dígitos"}
-              // helperText={"Mínimo de 6 dígitos"}
               {...register("password")}
               error={errors.password?.message}
             />
 
-            <Text
-              variant="text-xs-regular"
-              className="text-feedback-danger"
-            ></Text>
+            {/* Exibe erro geral se existir */}
+            {errors.root && (
+              <Text
+                variant="text-xs-regular"
+                className="text-feedback-danger -mt-2"
+              >
+                {errors.root.message}
+              </Text>
+            )}
           </div>
+
           <Button type="submit" variant="primary" disabled={isSubmitting}>
             {isSubmitting ? "Cadastrando..." : "Cadastrar"}
           </Button>
@@ -106,7 +114,7 @@ export function SignUp() {
 
       <div className="p-6 md:p-7 flex flex-col border border-gray-500 rounded-[10px]">
         <Text as="h3" variant="heading-md-bold" className="text-gray-200">
-          Já possuí uma conta?
+          Já possui uma conta?
         </Text>
         <Text variant="text-xs-regular" className="text-gray-300 mb-5 md:mb-6">
           Entre agora mesmo
