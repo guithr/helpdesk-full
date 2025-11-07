@@ -1,6 +1,7 @@
 // src/routes/ProtectedRoute.tsx
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { AppLayout } from "../components/layouts/AppLayout";
 
 interface ProtectedRouteProps {
   allowedRoles?: Array<"ADMIN" | "TECHNICIAN" | "CUSTOMER">;
@@ -15,5 +16,5 @@ export function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
     return <Navigate to="/unauthorized" replace />;
   }
 
-  return <Outlet />;
+  return <AppLayout />;
 }

@@ -2,22 +2,18 @@
 import { BrowserRouter, Routes as RouterRoutes, Route } from "react-router-dom";
 import { AuthRoutes } from "./auth-routes";
 import { ProtectedRoute } from "./protected-route";
-import { AdminRoutes } from "./admin-routes";
-
-import Unauthorized from "../pages/Unauthorized/Unauthorized";
-import { Ticket } from "../pages/Dashboard/Ticket";
 import { AuthProvider } from "../context/AuthContext";
-import { NotFound } from "../pages/Auth/NotFound/NotFound";
+
+import { Ticket } from "../pages/Dashboard/Ticket";
+import { PageComponents } from "../pages/Componentes";
+import { NotFound } from "../pages/NotFound/NotFound";
+import { Unauthorized } from "../pages/Unauthorized/Unauthorized";
 
 export function Routes() {
   return (
     <BrowserRouter>
-      {/* Envolvemos o AuthProvider dentro do Router */}
       <AuthProvider>
         <RouterRoutes>
-          {/* Rotas públicas (login, cadastro, etc) */}
-          <Route path="/*" element={<AuthRoutes />} />
-
           {/* Rotas de acesso restrito (usuário autenticado) */}
           <Route
             element={
@@ -29,8 +25,9 @@ export function Routes() {
             <Route path="/ticket" element={<Ticket />} />
           </Route>
 
-          {/* Rotas exclusivas do ADMIN */}
-          <Route path="/*" element={<AdminRoutes />} />
+          {/* Rotas públicas (login, cadastro, etc) */}
+          {AuthRoutes()}
+          <Route path="/components" element={<PageComponents />} />
 
           {/* Página de acesso negado */}
           <Route path="/unauthorized" element={<Unauthorized />} />
