@@ -1,4 +1,3 @@
-// src/contexts/AuthContext.tsx
 import { createContext, useState, useEffect, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
@@ -61,7 +60,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem("token", token);
     setToken(token);
     setUser(user);
-    navigate("/ticket");
+    if (user.role === "ADMIN") {
+      navigate("/tickets");
+    } else {
+      navigate("/my-tickets");
+    }
   }
 
   function signOut() {

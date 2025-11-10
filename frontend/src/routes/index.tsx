@@ -1,13 +1,17 @@
-// src/routes/index.tsx
 import { BrowserRouter, Routes as RouterRoutes, Route } from "react-router-dom";
 import { AuthRoutes } from "./auth-routes";
-import { ProtectedRoute } from "./protected-route";
 import { AuthProvider } from "../context/AuthContext";
 
-import { Ticket } from "../pages/Dashboard/Ticket";
-import { PageComponents } from "../pages/Componentes";
-import { NotFound } from "../pages/NotFound/NotFound";
+import { ProtectedRoute } from "./protected-route";
+
+import { Tickets } from "../pages/Dashboard/Tickets";
+import { Technicians } from "../pages/Technicians/Technicians";
+import { Clients } from "../pages/Clients/Clients";
+import { Services } from "../pages/Services/Services";
+import { MyTickets } from "../pages/MyTickets/MyTickets";
+import { NewTicket } from "../pages/NewTicket/NewTicket";
 import { Unauthorized } from "../pages/Unauthorized/Unauthorized";
+import { NotFound } from "../pages/NotFound/NotFound";
 
 export function Routes() {
   return (
@@ -15,24 +19,17 @@ export function Routes() {
       <AuthProvider>
         <RouterRoutes>
           {/* Rotas de acesso restrito (usuário autenticado) */}
-          <Route
-            element={
-              <ProtectedRoute
-                allowedRoles={["ADMIN", "TECHNICIAN", "CUSTOMER"]}
-              />
-            }
-          >
-            <Route path="/ticket" element={<Ticket />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/tickets" element={<Tickets />} />
+            <Route path="/my-tickets" element={<MyTickets />} />
+            <Route path="/technicians" element={<Technicians />} />
+            <Route path="/clients" element={<Clients />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/new-ticketss" element={<NewTicket />} />
           </Route>
-
           {/* Rotas públicas (login, cadastro, etc) */}
           {AuthRoutes()}
-          <Route path="/components" element={<PageComponents />} />
-
-          {/* Página de acesso negado */}
           <Route path="/unauthorized" element={<Unauthorized />} />
-
-          {/* 404 */}
           <Route path="*" element={<NotFound />} />
         </RouterRoutes>
       </AuthProvider>

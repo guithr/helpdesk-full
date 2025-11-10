@@ -1,9 +1,10 @@
 import { Header } from "./Header";
-import { NavLink } from "react-router-dom";
+
 import { useAuth } from "../../hooks/useAuth";
 
+import UserMenu from "../../components/ui/UserMenu";
 import Icon from "../icon/Icon";
-import Text from "../ui/Text";
+import MenuLink from "../ui/MenuLink";
 
 import IconMenu from "../../assets/icons/menu.svg?react";
 import Clipboard from "../../assets/icons/clipboard-list.svg?react";
@@ -16,7 +17,7 @@ export function Sidebar() {
   const { user } = useAuth();
   const menu = [
     {
-      to: "/ticket",
+      to: "/tickets",
       label: "Chamados",
       icon: Clipboard,
       roles: ["ADMIN"],
@@ -48,7 +49,7 @@ export function Sidebar() {
   );
 
   return (
-    <aside className="w-full p-6 bg-gray-100 md:p-4 md:h-screen md:w-50">
+    <aside className="w-full p-6 bg-gray-100 md:p-0 md:h-screen md:w-50">
       <div className="flex items-center justify-between md:flex-col md: h-full">
         <div className="p-[10px] bg-gray-200 rounded-[5px] mr-4 md:hidden">
           <Icon svg={IconMenu} size="lg" className="fill-gray-600" />
@@ -57,49 +58,18 @@ export function Sidebar() {
           <Header />
         </div>
         <div className="hidden flex-1 w-full md:block">
-          <nav className="flex flex-col gap-1">
-            {filteredMenu.map(({ to, label, icon: IconComponent }) => (
-              <NavLink
-                key={to}
-                to={to}
-                className="group flex items-center gap-3 p-3 rounded-[5px] transition hover:bg-gray-200"
-              >
-                <Icon
-                  svg={IconComponent}
-                  className="fill-gray-400 group-hover:fill-gray-500"
-                  size="lg"
-                />
-                <Text
-                  variant="text-sm-regular"
-                  className="text-gray-400 group-hover:text-gray-500"
-                >
-                  {label}
-                </Text>
-              </NavLink>
+          <nav className="flex flex-col gap-1 px-4">
+            {filteredMenu.map((item) => (
+              <MenuLink
+                key={item.to}
+                to={item.to}
+                label={item.label}
+                icon={item.icon}
+              />
             ))}
           </nav>
         </div>
-        <div className=" w-full flex justify-center items-center gap-3 md:p-4 md:border-t-gray-200 md:border-t">
-          <div className="flex items-center justify-center p-[10px] max-w-8  max-h-8 rounded-full bg-blue-dark">
-            <Text variant="text-sm-regular" className="text-gray-600">
-              GM
-            </Text>
-          </div>
-          <div className="hidden md:flex md:flex-col overflow-hidden">
-            <Text
-              variant="text-sm-regular"
-              className=" text-gray-600 truncate whitespace-nowrap max-w-[140px]"
-            >
-              {user?.name}
-            </Text>
-            <Text
-              variant="text-xs-regular"
-              className="text-gray-400 truncate whitespace-nowrap max-w-[140px]"
-            >
-              {user?.email}
-            </Text>
-          </div>
-        </div>
+        <UserMenu />
       </div>
     </aside>
   );

@@ -22,7 +22,7 @@ export function Unauthorized() {
       </Text>
 
       {isAuthenticated ? (
-        <Button onClick={() => navigate("/ticket")}>Voltar para Início</Button>
+        <Button onClick={() => navigate(-1)}>Voltar para Início</Button>
       ) : (
         <Button onClick={() => navigate("/signin")}>Fazer Login</Button>
       )}
