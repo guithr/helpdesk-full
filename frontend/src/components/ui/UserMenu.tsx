@@ -1,7 +1,7 @@
 import { tv, type VariantProps } from "tailwind-variants";
 import { useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
-
+import { getInitials } from "../../utils/getInitials";
 import Text from "./Text";
 
 import CircleUser from "../../assets/icons/circle-user.svg?react";
@@ -41,13 +41,6 @@ export default function UserMenu({
 
   if (!user) return null;
 
-  const initials = user.name
-    .split(" ")
-    .map((n) => n[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
-
   return (
     <div className="w-full relative">
       <div
@@ -60,7 +53,7 @@ export default function UserMenu({
       >
         <div className="flex items-center justify-center p-[10px] max-w-8  max-h-8 rounded-full bg-blue-dark">
           <Text variant="text-sm-regular" className="text-gray-600 ">
-            {initials}
+            {getInitials(user.name)}
           </Text>
         </div>
         <div className="hidden md:flex md:flex-col overflow-hidden max-w-[140px]">
