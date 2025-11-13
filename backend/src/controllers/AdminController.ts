@@ -213,6 +213,11 @@ export class AdminController {
         isActive: true,
         createdAt: true,
         updatedAt: true,
+        technician: {
+          select: {
+            availableHours: true,
+          },
+        },
       },
     });
 
