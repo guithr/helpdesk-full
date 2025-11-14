@@ -9,7 +9,12 @@ interface UseTicketsReturn {
   refetch: () => Promise<void>;
 }
 
-export function useTickets(): UseTicketsReturn {
+interface UseTicketsOptions {
+  filterBy?: "all" | "mine" | "assigned";
+}
+
+export function useTickets(options: UseTicketsOptions): UseTicketsReturn {
+  const { filterBy = "all" } = options;
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -19,7 +24,15 @@ export function useTickets(): UseTicketsReturn {
       setLoading(true);
       setError(null);
 
-      const response = await api.get("/tickets/all");
+      let endpoint = "/tickets/all";
+
+      if (filterBy === "mine") {
+        endpoint = "/tickets/my-tickets";
+      } else if (filterBy === "assigned") {
+        endpoint = "tickets/assigned-to-me";
+      }
+
+      const response = await api.get(endpoint);
 
       setTickets(response.data.tickets);
     } catch (err: any) {
@@ -34,7 +47,7 @@ export function useTickets(): UseTicketsReturn {
 
   useEffect(() => {
     fetchTickets();
-  }, []);
+  }, [filterBy]);
 
   return {
     tickets,

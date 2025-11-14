@@ -21,7 +21,9 @@ export function Tickets() {
   if (user?.role !== "ADMIN") {
     return <Navigate to="/unauthorized" replace />;
   }
-  const { tickets, loading, error, refetch } = useTickets();
+  const { tickets, loading, error, refetch } = useTickets({
+    filterBy: "all",
+  });
 
   const handleTicketClick = (ticket: Ticket) => {
     console.log("Ticket clicado:", ticket);
@@ -109,7 +111,7 @@ export function Tickets() {
     },
     {
       header: "Ações",
-      accessor: (ticket) => (
+      accessor: () => (
         <ButtonIcon icon={PenLine} variant="secondary" size="sm" />
       ),
     },
