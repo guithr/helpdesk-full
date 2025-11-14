@@ -6,7 +6,7 @@ import { ProtectedRoute } from "./protected-route";
 
 import { Tickets } from "../pages/Dashboard/Tickets";
 import { Technicians } from "../pages/Technicians/Technicians";
-import { Clients } from "../pages/Clients/Clients";
+import { Customer } from "../pages/Customer/Customer";
 import { Services } from "../pages/Services/Services";
 import { MyTickets } from "../pages/MyTickets/MyTickets";
 import { NewTicket } from "../pages/NewTicket/NewTicket";
@@ -23,7 +23,7 @@ export function Routes() {
             <Route path="/tickets" element={<Tickets />} />
             <Route path="/my-tickets" element={<MyTickets />} />
             <Route path="/technicians" element={<Technicians />} />
-            <Route path="/clients" element={<Clients />} />
+            <Route path="/clients" element={<Customer />} />
             <Route path="/services" element={<Services />} />
             <Route path="/new-ticketss" element={<NewTicket />} />
           </Route>

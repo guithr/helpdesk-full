@@ -285,7 +285,7 @@ export class AdminController {
 
   //Customer
   async listCustomer(request: Request, response: Response) {
-    const user = await prisma.user.findMany({
+    const customers = await prisma.user.findMany({
       where: {
         role: "CUSTOMER",
         isActive: true,
@@ -303,7 +303,7 @@ export class AdminController {
       },
     });
 
-    return response.status(200).json({ total: user.length, user });
+    return response.status(200).json({ total: customers.length, customers });
   }
 
   async updateCustomer(request: Request, response: Response) {

@@ -15,6 +15,7 @@ export const buttonVariants = tv({
       primary: "bg-gray-200 text-gray-600 hover:bg-gray-100",
       secondary:
         "bg-gray-500 text-gray-200 hover:bg-gray-400 hover:text-gray-100",
+      danger: "bg-gray-500 text-gray-200 hover:bg-gray-400 hover:text-gray-100",
       link: "bg-transparent text-gray-300 hover:bg-gray-500",
     },
     size: {
@@ -46,6 +47,7 @@ export const buttonIconVariants = tv({
     variant: {
       primary: "fill-gray-600",
       secondary: "fill-gray-200",
+      danger: "fill-feedback-danger",
       link: "fill-gray-300",
     },
     size: {
@@ -74,7 +76,7 @@ export default function ButtonIcon({
     >
       <Icon
         svg={IconComponent}
-        className={buttonIconVariants({ variant, size })}
+        className={buttonIconVariants({ variant, size, className })}
       />
     </button>
   );
