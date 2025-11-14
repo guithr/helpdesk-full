@@ -6,6 +6,7 @@ import Icon from "../icon/Icon";
 import Text from "./Text";
 import { tv, type VariantProps } from "tailwind-variants";
 import { type TicketStatus } from "../../types/ticket";
+import { type ServicesStatus } from "../../types/services";
 
 export const tagStatusVariants = tv({
   base: "inline-flex items-center justify-center pl-1.5 pr-2 gap-1 py-1.5 rounded-full",
@@ -37,10 +38,12 @@ export const tagStatusIconVariants = tv({
   },
 });
 
+type StatusType = TicketStatus | ServicesStatus;
+
 interface TagStatusProps
   extends React.ComponentProps<"div">,
     VariantProps<typeof tagStatusVariants> {
-  status: TicketStatus;
+  status: StatusType;
   icon?: React.ComponentProps<typeof Icon>["svg"];
 }
 
@@ -67,17 +70,30 @@ export function TagStatus({
       variant: "success" as const,
       icon: CircleCheck,
     },
+    TRUE: {
+      label: "Ativo",
+      variant: "success" as const,
+      icon: undefined,
+    },
+    FALSE: {
+      label: "Inativo",
+      variant: "danger" as const,
+      icon: undefined,
+    },
   };
 
   const config = statusConfig[status];
+  const iconToRender = IconSvg || config.icon; // ← Define qual ícone usar
 
   return (
     <div className={tagStatusVariants({ variant: config.variant })} {...props}>
-      <Icon
-        svg={config.icon}
-        size="md"
-        className={tagStatusIconVariants({ variant: config.variant })}
-      />
+      {iconToRender && ( // ← Só renderiza se tiver ícone
+        <Icon
+          svg={iconToRender}
+          size="md"
+          className={tagStatusIconVariants({ variant: config.variant })}
+        />
+      )}
       <Text variant="text-xs-bold">{config.label}</Text>
     </div>
   );

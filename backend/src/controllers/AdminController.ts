@@ -395,7 +395,7 @@ export class AdminController {
         name: "asc",
       },
     });
-    return response.status(200).json(services);
+    return response.status(200).json({ total: services.length, services });
   }
 
   async updateService(request: Request, response: Response) {

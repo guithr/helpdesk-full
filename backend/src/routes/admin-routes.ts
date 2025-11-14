@@ -25,7 +25,7 @@ adminRoutes.patch("/customer/:id", adminController.updateCustomer);
 
 // Service
 adminRoutes.post("/service", adminController.createService);
-adminRoutes.get("/service", adminController.listServices);
+adminRoutes.get("/services", adminController.listServices);
 adminRoutes.patch("/service/:id", adminController.updateService);
 adminRoutes.delete("/service/:id", adminController.deleteService);
 adminRoutes.patch("/service/:id/activate", adminController.activeService);
