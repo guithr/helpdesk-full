@@ -7,8 +7,8 @@ export const textVariants = tv({
     variant: {
       "text-xl": "text-[24px] leading-[140%] font-bold", // 24px
       "text-lg": "text-[20px] leading-[140%] font-bold", // 20px
-      "heading-md-regular": "text-[16px] leading-[140%] font-normal", // 16px
-      "heading-md-bold": "text-[16px] leading-[140%] font-bold", // 16px
+      "text-md-regular": "text-[16px] leading-[140%] font-normal", // 16px
+      "text-md-bold": "text-[16px] leading-[140%] font-bold", // 16px
       "text-sm-regular": "text-[14px] leading-[140%] font-normal", // 14px
       "text-sm-bold": "text-[14px] leading-[140%] font-bold", // 14px
       "text-xs-regular": "text-[12px] leading-[140%] font-normal", // 12px
@@ -17,7 +17,7 @@ export const textVariants = tv({
     },
   },
   defaultVariants: {
-    variant: "heading-md-regular",
+    variant: "text-md-regular",
   },
 });
 

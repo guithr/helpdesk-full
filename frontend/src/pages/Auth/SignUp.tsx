@@ -113,7 +113,7 @@ export function SignUp() {
       </div>
 
       <div className="p-6 md:p-7 flex flex-col border border-gray-500 rounded-[10px]">
-        <Text as="h3" variant="heading-md-bold" className="text-gray-200">
+        <Text as="h3" variant="text-md-bold" className="text-gray-200">
           Já possui uma conta?
         </Text>
         <Text variant="text-xs-regular" className="text-gray-300 mb-5 md:mb-6">

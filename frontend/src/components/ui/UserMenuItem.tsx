@@ -57,7 +57,7 @@ export default function UserMenuItem({
         svg={IconComponent}
         className={UserMenuIconVariants({ variant, className })}
       />
-      <Text variant="heading-md-regular">{label}</Text>
+      <Text variant="text-md-regular">{label}</Text>
     </button>
   );
 }
