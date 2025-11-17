@@ -186,6 +186,69 @@ export class TicketController {
     });
   }
 
+  async getMyTickets(request: Request, response: Response) {
+    const userId = request.user?.id;
+
+    if (!userId) {
+      throw new AppError("Usuário não autenticado", 401);
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { role: true },
+    });
+
+    if (!user) {
+      throw new AppError("Usuário não encontrado", 404);
+    }
+
+    if (user.role !== "TECHNICIAN") {
+      throw new AppError("Apenas técnicos podem visualizar seus chamados", 403);
+    }
+
+    // Busca o técnico usando o userId (correto!)
+    const technician = await prisma.technician.findUnique({
+      where: { userId },
+    });
+
+    if (!technician) {
+      throw new AppError("Técnico não encontrado", 404);
+    }
+
+    const tickets = await prisma.ticket.findMany({
+      where: {
+        technicianId: technician.id,
+      },
+      include: {
+        customer: {
+          include: {
+            user: {
+              select: { name: true, email: true, avatarUrl: true },
+            },
+          },
+        },
+        technician: {
+          include: {
+            user: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+        ticketServices: {
+          include: { service: true },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return response.status(200).json({
+      total: tickets.length,
+      tickets,
+    });
+  }
+
   async updateStatus(request: Request, response: Response) {
     const userId = request.user?.id;
 

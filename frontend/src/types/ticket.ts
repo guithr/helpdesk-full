@@ -3,6 +3,7 @@ export type TicketStatus = "OPEN" | "IN_PROGRESS" | "CLOSED";
 export interface Ticket {
   id: string;
   status: TicketStatus;
+  description: string;
   title: string;
   totalPrice: string | null;
   updatedAt: string;

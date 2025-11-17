@@ -45,11 +45,15 @@ interface TagStatusProps
     VariantProps<typeof tagStatusVariants> {
   status: StatusType;
   icon?: React.ComponentProps<typeof Icon>["svg"];
+  showLabel?: boolean;
+  label?: string;
 }
 
 export function TagStatus({
   status,
+  label,
   variant,
+  showLabel = true,
   icon: IconSvg,
   children,
   ...props
@@ -83,6 +87,7 @@ export function TagStatus({
   };
 
   const config = statusConfig[status];
+  const displayLabel = label || config.label;
   const iconToRender = IconSvg || config.icon; // ← Define qual ícone usar
 
   return (
@@ -94,7 +99,7 @@ export function TagStatus({
           className={tagStatusIconVariants({ variant: config.variant })}
         />
       )}
-      <Text variant="text-xs-bold">{config.label}</Text>
+      {showLabel && <Text variant="text-xs-bold">{displayLabel}</Text>}
     </div>
   );
 }
