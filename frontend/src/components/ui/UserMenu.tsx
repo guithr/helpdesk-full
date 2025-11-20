@@ -1,5 +1,5 @@
 import { tv, type VariantProps } from "tailwind-variants";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { getInitials } from "../../utils/getInitials";
 import Text from "./Text";
@@ -12,10 +12,10 @@ export const UserMenuVariants = tv({
   base: `flex items-center justify-center
          md:px-4 md:py-5 
          gap-3
-         md:border-t-gray-200 md:border-t
-         transition
+         md:border-t md:border-t-gray-200
+         transition-colors
          cursor-pointer
-         `,
+         select-none`,
   variants: {
     state: {
       default: "bg-gray-100 hover:bg-gray-200",
@@ -27,7 +27,7 @@ export const UserMenuVariants = tv({
   },
 });
 
-interface userMenuProps
+interface UserMenuProps
   extends React.ComponentProps<"div">,
     VariantProps<typeof UserMenuVariants> {}
 
@@ -35,14 +35,30 @@ export default function UserMenu({
   state,
   className,
   ...props
-}: userMenuProps) {
+}: UserMenuProps) {
   const [open, setOpen] = useState(false);
   const { user, signOut } = useAuth();
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Fecha o menu ao clicar fora
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    }
+
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [open]);
 
   if (!user) return null;
 
   return (
-    <div className="w-full relative">
+    <div className="md:w-full md:relative" ref={menuRef}>
       <div
         className={UserMenuVariants({
           className,
@@ -51,28 +67,30 @@ export default function UserMenu({
         {...props}
         onClick={() => setOpen(!open)}
       >
-        <div className="flex items-center justify-center p-[10px] max-w-8  max-h-8 rounded-full bg-blue-dark">
-          <Text variant="text-sm-regular" className="text-gray-600 ">
+        <div className="size-10 md:size-8 flex items-center justify-center rounded-full bg-blue-dark">
+          <Text variant="text-sm-regular" className="text-gray-600">
             {getInitials(user.name)}
           </Text>
         </div>
-        <div className="hidden md:flex md:flex-col overflow-hidden max-w-[140px]">
-          <Text
-            variant="text-sm-regular"
-            className=" text-gray-600 truncate whitespace-nowrap"
-          >
-            {user?.name}
+
+        <div className="hidden md:flex md:flex-col flex-1 min-w-0">
+          <Text variant="text-sm-regular" className="text-gray-600 truncate">
+            {user.name}
           </Text>
-          <Text
-            variant="text-xs-regular"
-            className="text-gray-400 truncate whitespace-nowrap"
-          >
-            {user?.email}
+          <Text variant="text-xs-regular" className="text-gray-400 truncate">
+            {user.email}
           </Text>
         </div>
       </div>
+
       {open && (
-        <div className="flex flex-col gap-4 bg-gray-100 rounded-[5px] absolute bottom-2 left-52 px-5 py-4 w-48 ">
+        <div
+          className="flex flex-col gap-4 bg-gray-100
+          w-full absolute
+          px-5 py-4
+          top-25 left-0 
+          md:bottom-2  md:left-52 md:top-auto  md:w-48 md:rounded-[5px]"
+        >
           <Text className="text-gray-400 " variant="text-xxs">
             Opções
           </Text>
@@ -80,14 +98,20 @@ export default function UserMenu({
             <UserMenuItem
               label="Perfil"
               icon={CircleUser}
-              onClick={() => alert("Modal futuro")}
+              onClick={() => {
+                alert("Modal futuro");
+                setOpen(false);
+              }}
             />
 
             <UserMenuItem
               label="Sair"
               icon={LogOut}
               variant="danger"
-              onClick={signOut}
+              onClick={() => {
+                signOut();
+                setOpen(false);
+              }}
             />
           </nav>
         </div>

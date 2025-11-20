@@ -39,6 +39,7 @@ interface MenuLinkProps {
   label: string;
   className?: string;
   icon: React.ComponentProps<typeof Icon>["svg"];
+  onClick?: () => void;
 }
 
 export default function MenuLink({
@@ -46,10 +47,12 @@ export default function MenuLink({
   label,
   icon: IconComponent,
   className,
+  onClick,
 }: MenuLinkProps) {
   return (
     <NavLink
       to={to}
+      onClick={onClick}
       className={({ isActive }) =>
         menuLinkVariants({
           state: isActive ? "active" : "default",
