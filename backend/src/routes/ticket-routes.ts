@@ -21,8 +21,8 @@ ticketRoutes.get(
 );
 
 ticketRoutes.get(
-  "/assigned-to-me",
-  ensureAuthorized("TECHNICIAN"),
+  "/my-tickets",
+  ensureAuthorized("TECHNICIAN", "CUSTOMER"),
   ticketController.getMyTickets
 );
 

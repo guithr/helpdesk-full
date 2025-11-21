@@ -1,19 +1,13 @@
-import { Navigate } from "react-router";
-import Text from "../../components/ui/Text";
-import { useAuth } from "../../hooks/useAuth";
-import { TicketCard } from "../../components/ticket/TicketCard";
 import { useTickets } from "../../hooks/useTickets";
-import Button from "../../components/ui/Button";
+
+import { TicketCard } from "../../components/ticket/TicketCard";
 import { TagStatus } from "../../components/ui/TagStatus";
-export function MyTickets() {
-  const { user } = useAuth();
+import Button from "../../components/ui/Button";
+import Text from "../../components/ui/Text";
 
-  if (user?.role !== "TECHNICIAN" && user?.role !== "CUSTOMER") {
-    return <Navigate to="/unauthorized" replace />;
-  }
-
+export function MyTicketsTechnician() {
   const { tickets, loading, error, refetch } = useTickets({
-    filterBy: "assigned",
+    filterBy: "mine",
   });
 
   const statusGroups = [
@@ -30,6 +24,15 @@ export function MyTickets() {
       tickets: tickets.filter((t) => t.status === "CLOSED"),
     },
   ];
+
+  if (error) {
+    return (
+      <div>
+        <div>{error}</div>
+        <Button onClick={refetch}>Tentar novamente</Button>
+      </div>
+    );
+  }
 
   return (
     <div>

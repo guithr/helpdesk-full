@@ -14,15 +14,16 @@ import { getInitials } from "../../utils/getInitials";
 import { useAuth } from "../../hooks/useAuth";
 import { Navigate } from "react-router";
 import { TagStatus } from "../../components/ui/TagStatus";
+import Button from "../../components/ui/Button";
 
-export function Tickets() {
+export function MyTicketsCustomer() {
   const { user } = useAuth();
 
-  if (user?.role !== "ADMIN") {
+  if (user?.role !== "CUSTOMER") {
     return <Navigate to="/unauthorized" replace />;
   }
   const { tickets, loading, error, refetch } = useTickets({
-    filterBy: "all",
+    filterBy: "mine",
   });
 
   const handleTicketClick = (ticket: Ticket) => {
@@ -119,14 +120,9 @@ export function Tickets() {
 
   if (error) {
     return (
-      <div className="p-8">
+      <div>
         <div>{error}</div>
-        <button
-          onClick={refetch}
-          className="mt-4 px-4 py-2 bg-blue-base text-white rounded hover:bg-blue-dark"
-        >
-          Tentar novamente
-        </button>
+        <Button onClick={refetch}>Tentar novamente</Button>
       </div>
     );
   }
@@ -137,13 +133,9 @@ export function Tickets() {
         <Text variant="text-xl" className="text-blue-dark">
           Meus Chamados
         </Text>
-        <button
-          onClick={refetch}
-          disabled={loading}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
-        >
+        <Button onClick={refetch} disabled={loading}>
           {loading ? "Carregando..." : "Atualizar"}
-        </button>
+        </Button>
       </div>
 
       <Table

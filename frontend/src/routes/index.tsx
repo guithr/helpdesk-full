@@ -4,14 +4,14 @@ import { AuthProvider } from "../context/AuthContext";
 
 import { ProtectedRoute } from "./protected-route";
 
-import { Tickets } from "../pages/Dashboard/Tickets";
 import { Technicians } from "../pages/Technicians/Technicians";
 import { Customer } from "../pages/Customer/Customer";
 import { Services } from "../pages/Services/Services";
-import { MyTickets } from "../pages/Technicians/MyTickets";
+import { MyTickets } from "../pages/Tickets/MyTickets";
 import { NewTicket } from "../pages/NewTicket/NewTicket";
 import { Unauthorized } from "../pages/Unauthorized/Unauthorized";
 import { NotFound } from "../pages/NotFound/NotFound";
+import { AllTickets } from "../pages/Tickets/AllTickets";
 
 export function Routes() {
   return (
@@ -20,7 +20,7 @@ export function Routes() {
         <RouterRoutes>
           {/* Rotas de acesso restrito (usuário autenticado) */}
           <Route element={<ProtectedRoute />}>
-            <Route path="/tickets" element={<Tickets />} />
+            <Route path="/tickets" element={<AllTickets />} />
             <Route path="/my-tickets" element={<MyTickets />} />
             <Route path="/technicians" element={<Technicians />} />
             <Route path="/clients" element={<Customer />} />

@@ -34,7 +34,7 @@ export function Table<T extends { id: string }>({
 
   if (data.length === 0) {
     return (
-      <div className="w-full p-8 text-center text-gray-500">{emptyMessage}</div>
+      <div className="w-full text-center text-gray-400">{emptyMessage}</div>
     );
   }
 

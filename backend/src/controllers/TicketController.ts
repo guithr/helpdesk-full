@@ -202,23 +202,40 @@ export class TicketController {
       throw new AppError("Usuário não encontrado", 404);
     }
 
-    if (user.role !== "TECHNICIAN") {
-      throw new AppError("Apenas técnicos podem visualizar seus chamados", 403);
+    if (user.role !== "TECHNICIAN" && user.role !== "CUSTOMER") {
+      throw new AppError(
+        "Apenas técnicos e clientes podem visualizar seus chamados",
+        403
+      );
     }
 
-    // Busca o técnico usando o userId (correto!)
-    const technician = await prisma.technician.findUnique({
-      where: { userId },
-    });
+    const whereCondition = await (async () => {
+      if (user.role === "TECHNICIAN") {
+        const technician = await prisma.technician.findUnique({
+          where: { userId },
+        });
 
-    if (!technician) {
-      throw new AppError("Técnico não encontrado", 404);
-    }
+        if (!technician) {
+          throw new AppError("Técnico não encontrado", 404);
+        }
+
+        return { technicianId: technician.id };
+      }
+
+      // user.role === "CUSTOMER"
+      const customer = await prisma.customer.findUnique({
+        where: { userId },
+      });
+
+      if (!customer) {
+        throw new AppError("Cliente não encontrado", 404);
+      }
+
+      return { customerId: customer.id };
+    })();
 
     const tickets = await prisma.ticket.findMany({
-      where: {
-        technicianId: technician.id,
-      },
+      where: whereCondition,
       include: {
         customer: {
           include: {
@@ -248,7 +265,6 @@ export class TicketController {
       tickets,
     });
   }
-
   async updateStatus(request: Request, response: Response) {
     const userId = request.user?.id;
 

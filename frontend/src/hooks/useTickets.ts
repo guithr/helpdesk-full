@@ -10,10 +10,10 @@ interface UseTicketsReturn {
 }
 
 interface UseTicketsOptions {
-  filterBy?: "all" | "mine" | "assigned";
+  filterBy?: "all" | "mine";
 }
 
-export function useTickets(options: UseTicketsOptions): UseTicketsReturn {
+export function useTickets(options: UseTicketsOptions = {}): UseTicketsReturn {
   const { filterBy = "all" } = options;
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
@@ -24,13 +24,8 @@ export function useTickets(options: UseTicketsOptions): UseTicketsReturn {
       setLoading(true);
       setError(null);
 
-      let endpoint = "/tickets/all";
-
-      if (filterBy === "mine") {
-        endpoint = "/tickets/my-tickets";
-      } else if (filterBy === "assigned") {
-        endpoint = "tickets/assigned-to-me";
-      }
+      const endpoint =
+        filterBy === "mine" ? "/tickets/my-tickets" : "/tickets/all";
 
       const response = await api.get(endpoint);
 
