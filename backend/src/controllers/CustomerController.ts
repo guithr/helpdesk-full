@@ -79,6 +79,17 @@ class CustomerController {
       user: updateUser,
     });
   }
+  async listServices(request: Request, response: Response) {
+    const services = await prisma.service.findMany({
+      where: {
+        isActive: true,
+      },
+      orderBy: {
+        name: "asc",
+      },
+    });
+    return response.status(200).json({ total: services.length, services });
+  }
   async changePassword(request: Request, response: Response) {
     const userId = request.user.id;
 

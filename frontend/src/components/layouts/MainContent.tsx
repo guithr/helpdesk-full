@@ -3,8 +3,8 @@ import { tv } from "tailwind-variants";
 
 export const MainContentVariants = tv({
   base: `flex-1 
-         pt-7 px-6 rounded-t-[20px] 
-         md:pt-13 md:px-12 md:mt-3 md:rounded-tl-[20px] md:rounded-tr-none
+         py-7 px-6 rounded-t-[20px] 
+         md:pt-13 pb-12 md:px-12 md:mt-3 md:rounded-tl-[20px] md:rounded-tr-none
          overflow-y-auto bg-gray-600`,
 });
 

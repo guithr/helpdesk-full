@@ -1,5 +1,18 @@
 export type TicketStatus = "OPEN" | "IN_PROGRESS" | "CLOSED";
 
+export interface CreateTicketInput {
+  title: string;
+  description?: string;
+  service: string[];
+}
+
+// Adicione este novo type
+export interface CreateTicketFormInput {
+  title: string;
+  description?: string;
+  serviceId: string;
+}
+
 export interface Ticket {
   id: string;
   status: TicketStatus;

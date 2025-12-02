@@ -8,10 +8,10 @@ import { Technicians } from "../pages/Technicians/Technicians";
 import { Customer } from "../pages/Customer/Customer";
 import { Services } from "../pages/Services/Services";
 import { MyTickets } from "../pages/Tickets/MyTickets";
-import { NewTicket } from "../pages/NewTicket/NewTicket";
+import { NewTicket } from "../pages/Tickets/NewTicket";
+import { AllTickets } from "../pages/Tickets/AllTickets";
 import { Unauthorized } from "../pages/Unauthorized/Unauthorized";
 import { NotFound } from "../pages/NotFound/NotFound";
-import { AllTickets } from "../pages/Tickets/AllTickets";
 
 export function Routes() {
   return (
@@ -25,7 +25,7 @@ export function Routes() {
             <Route path="/technicians" element={<Technicians />} />
             <Route path="/clients" element={<Customer />} />
             <Route path="/services" element={<Services />} />
-            <Route path="/new-ticketss" element={<NewTicket />} />
+            <Route path="/new-ticket" element={<NewTicket />} />
           </Route>
           {/* Rotas públicas (login, cadastro, etc) */}
           {AuthRoutes()}

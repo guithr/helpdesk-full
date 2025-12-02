@@ -33,7 +33,7 @@ export function Navigation() {
       roles: ["TECHNICIAN", "CUSTOMER"],
     },
     {
-      to: "/new-tickets",
+      to: "/new-ticket",
       label: "Criar chamado",
       icon: Plus,
       roles: ["CUSTOMER"],

@@ -2,17 +2,24 @@ import { useState, useEffect } from "react";
 import api from "../services/api";
 import type { Service } from "../types/services";
 
-export function useServices() {
+interface UseServicesReturn {
+  services: Service[];
+  loading: boolean;
+  error: string | null;
+  refetch: () => Promise<void>;
+}
+
+export function useServices(): UseServicesReturn {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
   async function fetchServices() {
     try {
       setLoading(true);
       setError(null);
 
-      const response = await api.get("/admin/services");
-
+      const response = await api.get("/customer/services");
       setServices(response.data.services);
     } catch (err: any) {
       const errorMessage =
@@ -28,5 +35,10 @@ export function useServices() {
     fetchServices();
   }, []);
 
-  return { services, loading, error };
+  return {
+    services,
+    loading,
+    error,
+    refetch: fetchServices,
+  };
 }
