@@ -17,6 +17,7 @@ export const buttonVariants = tv({
         "bg-gray-500 text-gray-200 hover:bg-gray-400 hover:text-gray-100",
       danger: "bg-gray-500 text-gray-200 hover:bg-gray-400 hover:text-gray-100",
       link: "bg-transparent text-gray-300 hover:bg-gray-500",
+      linkDefault: "bg-transparent text-gray-300 ",
     },
     size: {
       md: "h-10 px-4 py-2.5",
@@ -49,6 +50,7 @@ export const buttonIconVariants = tv({
       secondary: "fill-gray-200",
       danger: "fill-feedback-danger",
       link: "fill-gray-300",
+      linkDefault: "fill-gray-300",
     },
     size: {
       md: "h-[18px] w-[18px]",

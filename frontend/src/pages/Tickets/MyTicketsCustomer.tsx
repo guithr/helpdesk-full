@@ -9,7 +9,7 @@ import { formatId } from "../../utils/formatId";
 import Text from "../../components/ui/Text";
 import ButtonIcon from "../../components/ui/ButtonIcon";
 
-import PenLine from "../../assets/icons/pen-line.svg?react";
+import EyeIcon from "../../assets/icons/eye.svg?react";
 import { getInitials } from "../../utils/getInitials";
 import { useAuth } from "../../hooks/useAuth";
 import { Navigate } from "react-router";
@@ -56,13 +56,20 @@ export function MyTicketsCustomer() {
       ),
     },
     {
-      header: "Título e Serviço",
+      header: "Título",
       accessor: (ticket) => (
         <div className="flex flex-col">
           <Text variant="text-sm-bold" className="text-gray-200">
             {ticket.title}
           </Text>
-          <Text variant="text-xs-regular" className="text-gray-200">
+        </div>
+      ),
+    },
+    {
+      header: "Serviço",
+      accessor: (ticket) => (
+        <div className="flex flex-col">
+          <Text variant="text-sm-regular" className="text-gray-200">
             {getServiceDisplay(ticket)}
           </Text>
         </div>
@@ -76,21 +83,7 @@ export function MyTicketsCustomer() {
         </Text>
       ),
     },
-    {
-      header: "Cliente",
-      accessor: (ticket) => (
-        <div className="flex items-center gap-2">
-          <div className="flex items-center justify-center p-[10px] max-w-6  max-h-6 rounded-full bg-blue-dark">
-            <Text variant="text-xxs" className="text-gray-600">
-              {getInitials(ticket.customer.user.name)}
-            </Text>
-          </div>
-          <Text variant="text-sm-regular" className="text-gray-200">
-            {ticket.customer.user.name}
-          </Text>
-        </div>
-      ),
-    },
+
     {
       header: "Técnico",
       accessor: (ticket) => (
@@ -113,7 +106,7 @@ export function MyTicketsCustomer() {
     {
       header: "Ações",
       accessor: () => (
-        <ButtonIcon icon={PenLine} variant="secondary" size="sm" />
+        <ButtonIcon icon={EyeIcon} variant="secondary" size="sm" />
       ),
     },
   ];

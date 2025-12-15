@@ -95,6 +95,13 @@ class AuthController {
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
+      include: {
+        technician: {
+          select: {
+            availableHours: true,
+          },
+        },
+      },
     });
 
     if (!user) {
@@ -104,6 +111,56 @@ class AuthController {
     const { password: _, ...userWithoutPassword } = user;
 
     return response.json(userWithoutPassword);
+  }
+
+  async changePassword(request: Request, response: Response) {
+    const userId = request.user.id;
+
+    const schema = z.object({
+      currentPassword: z.string().min(1, "Senha atual é obrigatória"),
+      newPassword: z
+        .string()
+        .min(6, "Nova senha deve ter no mínimo 6 caracteres"),
+    });
+
+    const { currentPassword, newPassword } = schema.parse(request.body);
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      throw new AppError("Usuário não encontrado", 404);
+    }
+
+    const passwordMath = await compare(currentPassword, user.password);
+
+    if (!passwordMath) {
+      throw new AppError("Senha atual incorreta", 401);
+    }
+
+    const samePassword = await compare(newPassword, user.password);
+
+    if (samePassword) {
+      throw new AppError("A nova senha deve ser diferente da senha atual", 400);
+    }
+
+    const hashedPassword = await hash(newPassword, 8);
+
+    await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        password: hashedPassword,
+      },
+    });
+
+    return response.status(200).json({
+      message: "Senha alterada com sucesso",
+    });
   }
 }
 

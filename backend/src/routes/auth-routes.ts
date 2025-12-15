@@ -8,5 +8,9 @@ const authController = new AuthController();
 authRoutes.post("/login", authController.login);
 authRoutes.post("/register", authController.register);
 authRoutes.get("/me", ensureAuthenticated, authController.me);
-
+authRoutes.patch(
+  "/change-password",
+  ensureAuthenticated,
+  authController.changePassword
+);
 export { authRoutes };

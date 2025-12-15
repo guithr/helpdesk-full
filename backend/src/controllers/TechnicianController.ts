@@ -1,7 +1,6 @@
 import { prisma } from "@/database/prismaClient";
 import { AppError } from "@/errors/AppError";
 import { Request, Response } from "express";
-import { compare, hash } from "bcrypt";
 import { z } from "zod";
 
 export class TechnicianController {
@@ -77,55 +76,6 @@ export class TechnicianController {
     return response.status(200).json({
       mssage: "Perfil atualizado com sucesso",
       user: updateUser,
-    });
-  }
-  async changePassword(request: Request, response: Response) {
-    const userId = request.user.id;
-
-    const schema = z.object({
-      currentPassword: z.string().min(1, "Senha atual é obrigatória"),
-      newPassword: z
-        .string()
-        .min(8, "Nova senha deve ter no mínimo 8 caracteres"),
-    });
-
-    const { currentPassword, newPassword } = schema.parse(request.body);
-
-    const user = await prisma.user.findUnique({
-      where: {
-        id: userId,
-      },
-    });
-
-    if (!user) {
-      throw new AppError("Usuário não encontrado", 404);
-    }
-
-    const passwordMath = await compare(currentPassword, user.password);
-
-    if (!passwordMath) {
-      throw new AppError("Senha atual incorreta", 401);
-    }
-
-    const samePassword = await compare(newPassword, user.password);
-
-    if (samePassword) {
-      throw new AppError("A nova senha deve ser diferente da senha atual", 400);
-    }
-
-    const hashedPassword = await hash(newPassword, 8);
-
-    await prisma.user.update({
-      where: {
-        id: userId,
-      },
-      data: {
-        password: hashedPassword,
-      },
-    });
-
-    return response.status(200).json({
-      message: "Senha alterada com sucesso",
     });
   }
 }

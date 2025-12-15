@@ -254,7 +254,14 @@ export class TicketController {
           },
         },
         ticketServices: {
-          include: { service: true },
+          include: {
+            service: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
         },
       },
       orderBy: { createdAt: "desc" },

@@ -7,6 +7,7 @@ import Text from "./Text";
 import CircleUser from "../../assets/icons/circle-user.svg?react";
 import LogOut from "../../assets/icons/log-out.svg?react";
 import UserMenuItem from "./UserMenuItem";
+import ProfileDialog from "../profile/ProfileDialog";
 
 export const UserMenuVariants = tv({
   base: `flex items-center justify-center
@@ -14,8 +15,7 @@ export const UserMenuVariants = tv({
          gap-3
          md:border-t md:border-t-gray-200
          transition-colors
-         cursor-pointer
-         select-none`,
+         cursor-pointer select-none`,
   variants: {
     state: {
       default: "bg-gray-100 hover:bg-gray-200",
@@ -29,36 +29,46 @@ export const UserMenuVariants = tv({
 
 interface UserMenuProps
   extends React.ComponentProps<"div">,
-    VariantProps<typeof UserMenuVariants> {}
+    VariantProps<typeof UserMenuVariants> {
+  onOpenProfileModal?: () => void;
+}
 
 export default function UserMenu({
   state,
   className,
+  onOpenProfileModal,
   ...props
 }: UserMenuProps) {
   const [open, setOpen] = useState(false);
   const { user, signOut } = useAuth();
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Fecha o menu ao clicar fora
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+    if (!open) return;
+
+    function handleClickOutside(e: MouseEvent) {
+      const target = e.target as Node;
+
+      // Ignora cliques dentro do Dialog (que está em um Portal)
+      if (target instanceof Element && target.closest('[role="dialog"]')) {
+        return;
+      }
+
+      // Fecha apenas se clicar fora do menuRef
+      if (!menuRef.current?.contains(target)) {
         setOpen(false);
       }
     }
 
-    if (open) {
-      document.addEventListener("mousedown", handleClickOutside);
-      return () =>
-        document.removeEventListener("mousedown", handleClickOutside);
-    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open]);
 
   if (!user) return null;
 
   return (
     <div className="md:w-full md:relative" ref={menuRef}>
+      {/* Botão que abre o dropdown */}
       <div
         className={UserMenuVariants({
           className,
@@ -83,26 +93,24 @@ export default function UserMenu({
         </div>
       </div>
 
+      {/* DROPDOWN */}
       {open && (
         <div
           className="flex flex-col gap-4 bg-gray-100
           w-full absolute
           px-5 py-4
           top-25 left-0 
-          md:bottom-2  md:left-52 md:top-auto  md:w-48 md:rounded-[5px]"
+          md:bottom-2  md:left-52 md:top-auto 
+          md:w-48 md:rounded-[5px]"
         >
-          <Text className="text-gray-400 " variant="text-xxs">
+          <Text className="text-gray-400" variant="text-xxs">
             Opções
           </Text>
+
           <nav className="flex flex-col gap-2">
-            <UserMenuItem
-              label="Perfil"
-              icon={CircleUser}
-              onClick={() => {
-                alert("Modal futuro");
-                setOpen(false);
-              }}
-            />
+            <ProfileDialog>
+              <UserMenuItem label="Perfil" icon={CircleUser} />
+            </ProfileDialog>
 
             <UserMenuItem
               label="Sair"
