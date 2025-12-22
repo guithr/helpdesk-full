@@ -1,5 +1,5 @@
 import { useTickets } from "../../hooks/useTickets";
-
+import { useNavigate } from "react-router-dom";
 import { TicketCard } from "../../components/ticket/TicketCard";
 import { TagStatus } from "../../components/ui/TagStatus";
 import Button from "../../components/ui/Button";
@@ -9,6 +9,8 @@ export function MyTicketsTechnician() {
   const { tickets, loading, error, refetch } = useTickets({
     filterBy: "mine",
   });
+
+  const navigate = useNavigate();
 
   const statusGroups = [
     {
@@ -46,11 +48,15 @@ export function MyTicketsTechnician() {
       </div>
       <div className="flex flex-col gap-6">
         {statusGroups.map(({ tickets, status }) => (
-          <div className="space-y-4">
+          <div className="space-y-4" key={status}>
             <TagStatus status={status} />
             <div className="flex flex-wrap gap-4">
               {tickets.map((ticket) => (
-                <TicketCard key={ticket.id} ticket={ticket} />
+                <TicketCard
+                  key={ticket.id}
+                  ticket={ticket}
+                  onClick={() => navigate(`/tickets-details/${ticket.id}`)}
+                />
               ))}
             </div>
           </div>

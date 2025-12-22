@@ -1,23 +1,27 @@
-import { Table, type Column } from "../../components/table/Table";
 import { useTickets } from "../../hooks/useTickets";
+import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router";
+
+import { useAuth } from "../../hooks/useAuth";
+
 import type { Ticket } from "../../types/ticket";
 
-import { formatDate } from "../../utils/formatDate";
 import { formatCurrency } from "../../utils/formatCurrency";
+import { getInitials } from "../../utils/getInitials";
+import { formatDate } from "../../utils/formatDate";
 import { formatId } from "../../utils/formatId";
 
-import Text from "../../components/ui/Text";
+import { Table, type Column } from "../../components/table/Table";
+import { TagStatus } from "../../components/ui/TagStatus";
 import ButtonIcon from "../../components/ui/ButtonIcon";
+import Button from "../../components/ui/Button";
+import Text from "../../components/ui/Text";
 
 import EyeIcon from "../../assets/icons/eye.svg?react";
-import { getInitials } from "../../utils/getInitials";
-import { useAuth } from "../../hooks/useAuth";
-import { Navigate } from "react-router";
-import { TagStatus } from "../../components/ui/TagStatus";
-import Button from "../../components/ui/Button";
 
 export function MyTicketsCustomer() {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   if (user?.role !== "CUSTOMER") {
     return <Navigate to="/unauthorized" replace />;
@@ -25,11 +29,6 @@ export function MyTicketsCustomer() {
   const { tickets, loading, error, refetch } = useTickets({
     filterBy: "mine",
   });
-
-  const handleTicketClick = (ticket: Ticket) => {
-    console.log("Ticket clicado:", ticket);
-    alert("Ir para tela do chamado detalhado");
-  };
 
   const getServiceDisplay = (ticket: Ticket) => {
     if (!ticket.ticketServices || ticket.ticketServices.length === 0) {
@@ -42,10 +41,11 @@ export function MyTicketsCustomer() {
     {
       header: "Atualizado em",
       accessor: (ticket) => (
-        <Text variant="text-xs-regular" className="text-gray-200">
+        <Text variant="text-xs-regular" className="text-gray-200 text-wrap">
           {formatDate(ticket.updatedAt)}
         </Text>
       ),
+      showOnMobile: true,
     },
     {
       header: "Id",
@@ -54,34 +54,46 @@ export function MyTicketsCustomer() {
           {formatId(ticket.id)}
         </Text>
       ),
+      showOnMobile: false,
     },
     {
       header: "Título",
       accessor: (ticket) => (
-        <div className="flex flex-col">
-          <Text variant="text-sm-bold" className="text-gray-200">
+        <div className="flex flex-col ">
+          <Text
+            variant="text-sm-bold"
+            className="text-gray-200 max-w-[120px] md:max-w-[175px]
+     truncate"
+          >
             {ticket.title}
           </Text>
         </div>
       ),
+      showOnMobile: true,
     },
     {
       header: "Serviço",
       accessor: (ticket) => (
         <div className="flex flex-col">
-          <Text variant="text-sm-regular" className="text-gray-200">
+          <Text
+            variant="text-sm-regular"
+            className="text-gray-200  max-w-[175px]
+     truncate"
+          >
             {getServiceDisplay(ticket)}
           </Text>
         </div>
       ),
+      showOnMobile: false, // ← MOSTRAR EM MOBILE
     },
     {
       header: "Valor total",
       accessor: (ticket) => (
-        <Text variant="text-sm-regular" className="text-gray-200">
+        <Text variant="text-sm-regular" className="text-gray-200 ">
           {formatCurrency(ticket.totalPrice)}
         </Text>
       ),
+      showOnMobile: false,
     },
 
     {
@@ -98,15 +110,33 @@ export function MyTicketsCustomer() {
           </Text>
         </div>
       ),
+      showOnMobile: false,
     },
     {
       header: "Status",
-      accessor: (ticket) => <TagStatus status={ticket.status} />,
+      accessor: (ticket) => (
+        <>
+          {/* Mobile */}
+          <div className="md:hidden">
+            <TagStatus status={ticket.status} showLabel={false} />
+          </div>
+
+          {/* Desktop */}
+          <div className="hidden md:block">
+            <TagStatus status={ticket.status} />
+          </div>
+        </>
+      ),
     },
     {
       header: "Ações",
-      accessor: () => (
-        <ButtonIcon icon={EyeIcon} variant="secondary" size="sm" />
+      accessor: (ticket) => (
+        <ButtonIcon
+          onClick={() => navigate(`/tickets-details/${ticket.id}`)}
+          icon={EyeIcon}
+          variant="secondary"
+          size="sm"
+        />
       ),
     },
   ];
@@ -136,7 +166,6 @@ export function MyTicketsCustomer() {
         columns={columns}
         loading={loading}
         emptyMessage="Nenhum ticket encontrado"
-        onRowClick={handleTicketClick}
       />
     </div>
   );

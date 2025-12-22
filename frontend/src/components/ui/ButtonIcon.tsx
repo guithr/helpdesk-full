@@ -42,6 +42,7 @@ interface ButtonIconProps
   extends Omit<React.ComponentProps<"button">, "size" | "disabled">,
     VariantProps<typeof buttonVariants> {
   icon: React.ComponentProps<typeof Icon>["svg"];
+  onClick?: () => void;
 }
 export const buttonIconVariants = tv({
   variants: {

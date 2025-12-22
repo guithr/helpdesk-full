@@ -13,24 +13,38 @@ import { formatDate } from "../../utils/formatDate";
 
 interface TicketCardProps {
   ticket: Ticket;
-  key: string;
+  onClick?: () => void;
 }
 
-export function TicketCard({ ticket }: TicketCardProps) {
+export function TicketCard({ ticket, onClick }: TicketCardProps) {
   const openModal = () => {
     alert("openModal");
   };
   const renderActionButton = () => {
     if (ticket.status === "OPEN") {
       return (
-        <Button size="sm" icon={Clock} onClick={openModal}>
+        <Button
+          size="sm"
+          icon={Clock}
+          onClick={(e) => {
+            e.stopPropagation();
+            openModal();
+          }}
+        >
           Iniciar
         </Button>
       );
     }
     if (ticket.status === "IN_PROGRESS") {
       return (
-        <Button size="sm" icon={Check} onClick={openModal}>
+        <Button
+          size="sm"
+          icon={Check}
+          onClick={(e) => {
+            e.stopPropagation(); // 👈 CRÍTICO
+            openModal();
+          }}
+        >
           Encerrar
         </Button>
       );
@@ -39,7 +53,10 @@ export function TicketCard({ ticket }: TicketCardProps) {
     return;
   };
   return (
-    <div className="p-5 w-[346px] rounded-[10px] border border-gray-500 ">
+    <div
+      className="p-5 w-[346px] rounded-[10px] border border-gray-500"
+      onClick={onClick}
+    >
       <div className="flex justify-between items-center">
         <Text variant="text-xs-bold" className="text-gray-400">
           {formatId(ticket.id)}

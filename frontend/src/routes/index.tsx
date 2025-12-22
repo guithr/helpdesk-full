@@ -12,6 +12,7 @@ import { NewTicket } from "../pages/Tickets/NewTicket";
 import { AllTickets } from "../pages/Tickets/AllTickets";
 import { Unauthorized } from "../pages/Unauthorized/Unauthorized";
 import { NotFound } from "../pages/NotFound/NotFound";
+import { TicketDetails } from "../pages/Tickets/TicketDetails";
 
 export function Routes() {
   return (
@@ -26,6 +27,10 @@ export function Routes() {
             <Route path="/clients" element={<Customer />} />
             <Route path="/services" element={<Services />} />
             <Route path="/new-ticket" element={<NewTicket />} />
+            <Route
+              path="/tickets-details/:ticketId"
+              element={<TicketDetails />}
+            />
           </Route>
           {/* Rotas públicas (login, cadastro, etc) */}
           {AuthRoutes()}

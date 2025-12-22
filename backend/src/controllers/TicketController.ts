@@ -272,6 +272,7 @@ export class TicketController {
       tickets,
     });
   }
+
   async updateStatus(request: Request, response: Response) {
     const userId = request.user?.id;
 
@@ -336,6 +337,49 @@ export class TicketController {
     return response.status(200).json({
       message: `Status do chamado atualizado para ${status}`,
       ticket: updatedTicket,
+    });
+  }
+
+  async ticketDetails(request: Request, response: Response) {
+    const userId = request.user?.id;
+
+    if (!userId) {
+      throw new AppError("Usuário não autenticado", 401);
+    }
+
+    const paramSchema = z.object({
+      id: z.uuid("ID do chamado inválido"),
+    });
+
+    const { id } = paramSchema.parse(request.params);
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: { role: true },
+    });
+
+    if (!user) {
+      throw new AppError("Usuário não encontrado", 404);
+    }
+
+    const ticket = await prisma.ticket.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        technician: { include: { user: true } },
+      },
+    });
+
+    if (!ticket) {
+      throw new AppError("Chamado não encontrado", 404);
+    }
+
+    return response.status(200).json({
+      message: `Chamado detalhado`,
+      ticket,
     });
   }
 

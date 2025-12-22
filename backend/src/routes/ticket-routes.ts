@@ -32,6 +32,12 @@ ticketRoutes.get(
   ticketController.getAllTicket
 );
 
+ticketRoutes.get(
+  "/:id/details",
+  ensureAuthorized("ADMIN", "TECHNICIAN", "CUSTOMER"),
+  ticketController.ticketDetails
+);
+
 ticketRoutes.patch(
   "/:id/status",
   ensureAuthorized("ADMIN", "TECHNICIAN"),

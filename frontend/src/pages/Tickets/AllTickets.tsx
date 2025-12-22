@@ -13,10 +13,12 @@ import PenLine from "../../assets/icons/pen-line.svg?react";
 import { getInitials } from "../../utils/getInitials";
 import { useAuth } from "../../hooks/useAuth";
 import { Navigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { TagStatus } from "../../components/ui/TagStatus";
 import Button from "../../components/ui/Button";
 
 export function AllTickets() {
+  const navigate = useNavigate();
   const { user } = useAuth();
 
   if (user?.role !== "ADMIN") {
@@ -25,11 +27,6 @@ export function AllTickets() {
   const { tickets, loading, error, refetch } = useTickets({
     filterBy: "all",
   });
-
-  const handleTicketClick = (ticket: Ticket) => {
-    console.log("Ticket clicado:", ticket);
-    alert("Ir para tela do chamado detalhado");
-  };
 
   const getServiceDisplay = (ticket: Ticket) => {
     if (!ticket.ticketServices || ticket.ticketServices.length === 0) {
@@ -112,8 +109,13 @@ export function AllTickets() {
     },
     {
       header: "Ações",
-      accessor: () => (
-        <ButtonIcon icon={PenLine} variant="secondary" size="sm" />
+      accessor: (ticket) => (
+        <ButtonIcon
+          icon={PenLine}
+          variant="secondary"
+          size="sm"
+          onClick={() => navigate(`/tickets-details/${ticket.id}`)}
+        />
       ),
     },
   ];
@@ -143,7 +145,6 @@ export function AllTickets() {
         columns={columns}
         loading={loading}
         emptyMessage="Nenhum ticket encontrado"
-        onRowClick={handleTicketClick}
       />
     </div>
   );

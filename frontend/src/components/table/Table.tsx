@@ -1,4 +1,3 @@
-// src/components/Table/Table.tsx
 import { type ReactNode } from "react";
 import Text from "../ui/Text";
 
@@ -6,6 +5,7 @@ export interface Column<T> {
   header: string;
   accessor: keyof T | ((row: T) => ReactNode);
   className?: string;
+  showOnMobile?: boolean;
 }
 
 interface TableProps<T> {
@@ -47,39 +47,50 @@ export function Table<T extends { id: string }>({
 
   return (
     <div className="w-full border border-gray-500 rounded-xl overflow-hidden">
-      <table className="w-full rounded-xl">
-        <thead>
-          <tr>
-            {columns.map((column, index) => (
-              <th
-                key={index}
-                className="p-3 text-left border-b border-gray-500"
-              >
-                <Text variant="text-sm-bold" className="text-gray-400">
-                  {column.header}
-                </Text>
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-500">
-          {data.map((row) => (
-            <tr
-              key={row.id}
-              onClick={() => onRowClick?.(row)}
-              className={`hover:bg-gray-50 transition-colors ${
-                onRowClick ? "cursor-pointer" : ""
-              }`}
-            >
+      <div className="overflow-x-auto">
+        <table className="w-full rounded-xl ">
+          <thead>
+            <tr>
               {columns.map((column, index) => (
-                <td key={index} className="px-3 py-6 whitespace-nowrap">
-                  {getCellValue(row, column)}
-                </td>
+                <th
+                  key={index}
+                  className={`p-3 text-left border-b border-gray-500
+  ${column.showOnMobile === false ? "hidden md:table-cell" : ""}
+`}
+                >
+                  <Text variant="text-sm-bold" className="text-gray-400">
+                    {column.header}
+                  </Text>
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-gray-500">
+            {data.map((row) => (
+              <tr
+                key={row.id}
+                onClick={() => onRowClick?.(row)}
+                className={`hover:bg-gray-50 transition-colors ${
+                  onRowClick ? "cursor-pointer" : ""
+                }`}
+              >
+                {columns.map((column, index) => (
+                  <td
+                    key={index}
+                    className={`px-3 py-6 whitespace-nowrap ${
+                      column.showOnMobile === false
+                        ? "hidden md:table-cell"
+                        : ""
+                    }`}
+                  >
+                    {getCellValue(row, column)}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

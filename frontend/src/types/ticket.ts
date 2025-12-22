@@ -6,7 +6,6 @@ export interface CreateTicketInput {
   service: string[];
 }
 
-// Adicione este novo type
 export interface CreateTicketFormInput {
   title: string;
   description?: string;
@@ -19,6 +18,7 @@ export interface Ticket {
   description: string;
   title: string;
   totalPrice: string | null;
+  createdAt: string;
   updatedAt: string;
   customer: {
     user: {
@@ -31,6 +31,7 @@ export interface Ticket {
     temporaryPassword: boolean;
     user: {
       name: string;
+      email: string;
       avatarUrl: string | null;
     };
   };
